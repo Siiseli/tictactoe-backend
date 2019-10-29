@@ -27,7 +27,7 @@ class TicTacToeResource {
     fun startGame(startGameRequest: StartGameRequest) : Response {
         return try {
             val game = ticTacToeService.startGame(startGameRequest.name, startGameRequest.character)
-            Response.status(Response.Status.CREATED).entity(StartGameResponse(game)).build()
+            Response.status(Response.Status.CREATED).entity(StartGameResponse(game.id)).build()
         } catch(e: Exception) {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR).build()
         }

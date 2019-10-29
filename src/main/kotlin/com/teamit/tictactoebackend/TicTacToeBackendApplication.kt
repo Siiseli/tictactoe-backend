@@ -6,8 +6,10 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 @SpringBootApplication
 class TicTacToeBackendApplication : SpringBootServletInitializer() {
-    fun main(args: Array<String>) {
-        TicTacToeBackendApplication().configure(SpringApplicationBuilder(TicTacToeBackendApplication::class.java)).run(*args)
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            TicTacToeBackendApplication().configure(SpringApplicationBuilder(TicTacToeBackendApplication::class.java)).run(*args)
+        }
     }
 }
-
