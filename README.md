@@ -5,7 +5,7 @@ This is a tic tac toe REST service
 ## Starting up
 
 ### Prerequisites
-- Install maven
+- Install Maven
 
 ### Running
 - Run in the project root folder ```mvn spring-boot:run```
