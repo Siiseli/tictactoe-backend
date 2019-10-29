@@ -37,20 +37,29 @@ class TicTacToeResourceIntegrationTest {
         val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
 
         assertEquals(HttpStatus.CREATED, result.statusCode)
-        assertTrue(result.body?.game?.id?.isNotEmpty()!! && result.body?.game?.id?.isNotBlank()!!)
+        assertTrue(result.body?.id?.isNotEmpty()!! && result.body?.id?.isNotBlank()!!)
     }
 
     @Test
     fun shouldGetGameWithId() {
         val startGameRequest = StartGameRequest("testName", "x")
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
-        val gameId = startGameResult.body?.game?.id
+        val gameId = startGameResult.body?.id
         val result = testRestTemplate.getForEntity(
                 "/game/$gameId",
                 TicTacToeGame::class.java)
 
         assertEquals(HttpStatus.OK, result.statusCode)
         assertEquals(gameId, result.body?.id)
+    }
+
+    @Test
+    fun shouldGetNotFoundWhenFetchingGameWithInvalidId() {
+        val result = testRestTemplate.getForEntity(
+                "/game/-1",
+                TicTacToeGame::class.java)
+
+        assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
     }
 
     @Test
