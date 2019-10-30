@@ -8,9 +8,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
+import org.springframework.http.*
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension::class)
@@ -63,9 +61,11 @@ class TicTacToeResourceIntegrationTests {
     }
 
     @Test
-    fun shouldGetGameWithId() {
+    fun shouldGetGameWithIdInJson() {
         val startGameRequest = StartGameRequest("testName", 'x')
-        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+        val httpHeaders = HttpHeaders()
+        httpHeaders.accept = listOf(MediaType.APPLICATION_JSON)
+        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest, httpHeaders), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
         val result = testRestTemplate.getForEntity(
                 "/game/$gameId",
@@ -73,6 +73,24 @@ class TicTacToeResourceIntegrationTests {
 
         assertEquals(HttpStatus.OK, result.statusCode)
         assertEquals(gameId, result.body?.id)
+    }
+
+    @Test
+    fun shouldGetGameWithIdInAscii() {
+        val startGameRequest = StartGameRequest("testName", 'x')
+        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+        val gameId = startGameResult.body?.id
+
+        val httpHeaders = HttpHeaders()
+        httpHeaders.accept = listOf(MediaType.TEXT_PLAIN)
+        val result = testRestTemplate.exchange(
+                "/game/$gameId",
+                HttpMethod.GET,
+                HttpEntity<Object>(httpHeaders),
+                String::class.java)
+
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertTrue(result.body?.isNotEmpty()!!)
     }
 
     @Test

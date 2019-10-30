@@ -5,9 +5,9 @@ import com.teamit.tictactoebackend.exception.IllegalMoveException
 import com.teamit.tictactoebackend.exception.InvalidCharacterException
 import com.teamit.tictactoebackend.model.game.*
 import com.teamit.tictactoebackend.service.TicTacToeService
+import com.teamit.tictactoebackend.service.TicTacToeVisualizerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.RequestBody
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -18,6 +18,9 @@ class TicTacToeResource {
 
     @Autowired
     private lateinit var ticTacToeService: TicTacToeService
+
+    @Autowired
+    private lateinit var ticTacToeVisualizer: TicTacToeVisualizerService
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -41,11 +44,13 @@ class TicTacToeResource {
 
     @GET
     @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getGame(@PathParam("id") id: String) : Response {
+    fun getGame(@PathParam("id") id: String, @HeaderParam("accept") accept: String) : Response {
         return try {
             val game = ticTacToeService.getGame(id)
-            Response.status(Response.Status.OK).entity(game).build()
+            if(accept.contains(MediaType.APPLICATION_JSON)) {
+                return Response.status(Response.Status.OK).entity(game).build()
+            }
+            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
         } catch(e: GameNotFoundException) {
             Response.status(Response.Status.NOT_FOUND).entity(e).build()
         } catch(e: Exception) {

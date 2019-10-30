@@ -3,6 +3,7 @@ package com.teamit.tictactoebackend.service
 import com.teamit.tictactoebackend.exception.GameNotFoundException
 import com.teamit.tictactoebackend.exception.IllegalMoveException
 import com.teamit.tictactoebackend.exception.InvalidCharacterException
+import com.teamit.tictactoebackend.mapper.StringPositionMapper
 import com.teamit.tictactoebackend.model.game.TicTacToeCharacters
 import com.teamit.tictactoebackend.model.game.TicTacToeGame
 import com.teamit.tictactoebackend.model.game.TicTacToeGames
@@ -48,22 +49,22 @@ class TicTacToeService {
     fun makeMove(id: String, col: String, row: String) : TicTacToeGame {
         val game = getGame(id)
 
-        if (game.winner != TicTacToeCharacters.Empty) {
+        if (game.winner != TicTacToeCharacters.EMPTY) {
             throw IllegalMoveException("Game has already ended, the winner is ${game.winner}")
         }
 
-        val colPos = mapPositionFromString(col)
-        val rowPos = mapPositionFromString(row)
+        val colPos = StringPositionMapper.mapPositionFromString(col)
+        val rowPos = StringPositionMapper.mapPositionFromString(row)
 
         val character = game.board[rowPos][colPos]
-        if (character == TicTacToeCharacters.Empty) {
+        if (character == TicTacToeCharacters.EMPTY) {
             game.board[rowPos][colPos] = game.playerCharacter
         } else {
             throw IllegalMoveException("Can not make move at $col, $row: already occupied")
         }
 
         var winner: Char = checkWinCondition(game)
-        if(winner != TicTacToeCharacters.Empty) {
+        if(winner != TicTacToeCharacters.EMPTY) {
             game.winner = winner
             gameDTO.saveGame(game)
             return game
@@ -71,7 +72,7 @@ class TicTacToeService {
 
         game.board = computerPlayer.makeMove(game)
         winner = checkWinCondition(game)
-        if(winner != TicTacToeCharacters.Empty) {
+        if(winner != TicTacToeCharacters.EMPTY) {
             game.winner = winner
         }
         gameDTO.saveGame(game)
@@ -87,7 +88,7 @@ class TicTacToeService {
                 score += getCharacterScore(character, game)
 
                 val winner: Char = getWinnerFromScore(score, game)
-                if(winner !== TicTacToeCharacters.Empty) return winner
+                if(winner !== TicTacToeCharacters.EMPTY) return winner
             }
         }
 
@@ -99,7 +100,7 @@ class TicTacToeService {
                 score += getCharacterScore(character, game)
 
                 val winner: Char = getWinnerFromScore(score, game)
-                if(winner !== TicTacToeCharacters.Empty) return winner
+                if(winner !== TicTacToeCharacters.EMPTY) return winner
             }
         }
 
@@ -110,7 +111,7 @@ class TicTacToeService {
             score += getCharacterScore(character, game)
         }
         var winner: Char = getWinnerFromScore(score, game)
-        if(winner !== TicTacToeCharacters.Empty) return winner
+        if(winner !== TicTacToeCharacters.EMPTY) return winner
 
         score = 0
         for (i in 0 until game.board.size) {
@@ -136,15 +137,6 @@ class TicTacToeService {
         } else if(score >= game.board.size) {
             return game.playerCharacter
         }
-        return TicTacToeCharacters.Empty
-    }
-
-    private fun mapPositionFromString(pos: String) : Int {
-        return when(pos.toLowerCase()) {
-            "a" -> 0
-            "b" -> 1
-            "c" -> 2
-            else -> throw IllegalMoveException("Can not make move outside of game board")
-        }
+        return TicTacToeCharacters.EMPTY
     }
 }
