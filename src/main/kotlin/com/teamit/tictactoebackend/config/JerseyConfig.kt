@@ -5,7 +5,7 @@ import org.glassfish.jersey.server.ResourceConfig
 import org.springframework.stereotype.Component
 
 @Component
-class HelloConfig : ResourceConfig() {
+class JerseyConfig : ResourceConfig() {
     init {
         registerEndpoints()
     }

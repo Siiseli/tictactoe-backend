@@ -17,8 +17,12 @@ class TicTacToeGameDTO {
     }
 
     fun getGame(id: String): TicTacToeGame? {
-        val gameFile = getGameFile(id)
-        return loadGameFile(gameFile)
+        return try {
+            val gameFile = getGameFile(id)
+            loadGameFile(gameFile)
+        } catch(e: Exception) {
+            null
+        }
     }
 
     fun getGames(): TicTacToeGames {
