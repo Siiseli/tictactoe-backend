@@ -75,7 +75,7 @@ class TicTacToeResourceIntegrationTest {
         val gameId = startGameResult.body?.id
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
-        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Response::class.java)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ResponseEntity::class.java)
 
         assertEquals(HttpStatus.OK, result.statusCode)
     }
@@ -95,11 +95,21 @@ class TicTacToeResourceIntegrationTest {
         val gameId = startGameResult.body?.id
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
-        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ResponseEntity::class.java)
-        assertEquals(HttpStatus.OK, result.statusCode)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ResponseEntity::class.java)
 
-        val secondResult = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
-        assertEquals(HttpStatus.BAD_REQUEST, secondResult.statusCode)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
+        assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
+    }
+
+    @Test
+    fun shouldNotBeAbleToMakeMoveOutsideGameBoard() {
+        val startGameRequest = StartGameRequest("testName", 'x')
+        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+        val gameId = startGameResult.body?.id
+
+        val makeMoveRequest = MakeMoveRequest("a", "d")
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
+        assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
     }
 
     @Test
@@ -109,9 +119,9 @@ class TicTacToeResourceIntegrationTest {
         val gameId = startGameResult.body?.id
 
         // We can win like this every time, because the AI is not the sharpest knife in the kitchen.
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("A", "C")), Response::class.java)
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("B", "C")), Response::class.java)
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("C", "C")), Response::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("A", "C")), ResponseEntity::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("B", "C")), ResponseEntity::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("C", "C")), ResponseEntity::class.java)
 
         val result = testRestTemplate.getForEntity(
                 "/game/$gameId",

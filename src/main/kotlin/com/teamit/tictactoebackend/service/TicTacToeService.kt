@@ -42,6 +42,7 @@ class TicTacToeService {
 
         val colPos = mapPositionFromString(col)
         val rowPos = mapPositionFromString(row)
+
         val character = game.board[rowPos][colPos]
         if (character == ' ') {
             game.board[rowPos][colPos] = game.playerCharacter
@@ -57,6 +58,7 @@ class TicTacToeService {
         }
 
         game.board = computerPlayer.makeMove(game)
+        checkWinCondition(game)
         if(winner != ' ') {
             game.winner = winner
         }
@@ -129,7 +131,7 @@ class TicTacToeService {
             "a" -> 0
             "b" -> 1
             "c" -> 2
-            else -> -1
+            else -> throw IllegalMoveException("Can not make move outside of game board")
         }
     }
 }
