@@ -32,7 +32,7 @@ class TicTacToeResourceIntegrationTest {
 
     @Test
     fun shouldStartGame() {
-        val startGameRequest = StartGameRequest("testName", "x")
+        val startGameRequest = StartGameRequest("testName", 'x')
         val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
 
         assertEquals(HttpStatus.CREATED, result.statusCode)
@@ -41,7 +41,7 @@ class TicTacToeResourceIntegrationTest {
 
     @Test
     fun shouldGetGameWithId() {
-        val startGameRequest = StartGameRequest("testName", "x")
+        val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
         val result = testRestTemplate.getForEntity(
@@ -70,7 +70,7 @@ class TicTacToeResourceIntegrationTest {
 
     @Test
     fun shouldBeAbleToMakeMove() {
-        val startGameRequest = StartGameRequest("testName", "x")
+        val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
 
@@ -90,7 +90,7 @@ class TicTacToeResourceIntegrationTest {
 
     @Test
     fun shouldNotBeAbleToMakeSameMoveTwice() {
-        val startGameRequest = StartGameRequest("testName", "x")
+        val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
 
@@ -100,5 +100,25 @@ class TicTacToeResourceIntegrationTest {
 
         val secondResult = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
         assertEquals(HttpStatus.BAD_REQUEST, secondResult.statusCode)
+    }
+
+    @Test
+    fun shouldBeAbleToWinGame() {
+        val startGameRequest = StartGameRequest("testName", 'x')
+        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+        val gameId = startGameResult.body?.id
+
+        // We can win like this every time, because the AI is not the sharpest knife in the kitchen.
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("A", "C")), Response::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("B", "C")), Response::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("C", "C")), Response::class.java)
+
+        val result = testRestTemplate.getForEntity(
+                "/game/$gameId",
+                TicTacToeGame::class.java)
+
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertEquals(gameId, result.body?.id)
+        assertEquals('x', result.body?.winner)
     }
 }
