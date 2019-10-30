@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TicTacToeResourceIntegrationTest {
+class TicTacToeResourceIntegrationTests {
 
     @Autowired
     lateinit var testRestTemplate: TestRestTemplate
