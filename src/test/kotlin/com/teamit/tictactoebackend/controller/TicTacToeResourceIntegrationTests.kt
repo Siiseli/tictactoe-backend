@@ -11,7 +11,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension::class)
@@ -91,7 +90,7 @@ class TicTacToeResourceIntegrationTests {
         val gameId = startGameResult.body?.id
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
-        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ResponseEntity::class.java)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), TicTacToeGame::class.java)
 
         assertEquals(HttpStatus.OK, result.statusCode)
     }
@@ -111,7 +110,7 @@ class TicTacToeResourceIntegrationTests {
         val gameId = startGameResult.body?.id
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ResponseEntity::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), TicTacToeGame::class.java)
 
         val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
         assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
@@ -135,9 +134,9 @@ class TicTacToeResourceIntegrationTests {
         val gameId = startGameResult.body?.id
 
         // We can win like this every time, because the AI is not the sharpest knife in the kitchen.
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("A", "C")), ResponseEntity::class.java)
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("B", "C")), ResponseEntity::class.java)
-        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("C", "C")), ResponseEntity::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("A", "C")), TicTacToeGame::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("B", "C")), TicTacToeGame::class.java)
+        testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("C", "C")), TicTacToeGame::class.java)
 
         val result = testRestTemplate.getForEntity(
                 "/game/$gameId",

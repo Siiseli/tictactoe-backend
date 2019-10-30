@@ -2,10 +2,7 @@ package com.teamit.tictactoebackend.controller
 
 import com.teamit.tictactoebackend.exception.GameNotFoundException
 import com.teamit.tictactoebackend.exception.IllegalMoveException
-import com.teamit.tictactoebackend.model.game.MakeMoveRequest
-import com.teamit.tictactoebackend.model.game.StartGameRequest
-import com.teamit.tictactoebackend.model.game.StartGameResponse
-import com.teamit.tictactoebackend.model.game.TicTacToeGames
+import com.teamit.tictactoebackend.model.game.*
 import com.teamit.tictactoebackend.service.TicTacToeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -59,8 +56,8 @@ class TicTacToeResource {
     @Produces(MediaType.APPLICATION_JSON)
     fun makeMove(@PathParam("id") id: String, makeMoveRequest: MakeMoveRequest) : Response {
         return try {
-            ticTacToeService.makeMove(id, makeMoveRequest.col, makeMoveRequest.row)
-            Response.status(Response.Status.OK).build()
+            val game = ticTacToeService.makeMove(id, makeMoveRequest.col, makeMoveRequest.row)
+            Response.status(Response.Status.OK).entity(game).build()
         } catch(e: GameNotFoundException) {
             Response.status(Response.Status.NOT_FOUND).entity(e).build()
         }

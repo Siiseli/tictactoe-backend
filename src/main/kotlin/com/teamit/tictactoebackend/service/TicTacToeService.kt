@@ -33,7 +33,7 @@ class TicTacToeService {
         return game
     }
 
-    fun makeMove(id: String, col: String, row: String) {
+    fun makeMove(id: String, col: String, row: String) : TicTacToeGame {
         val game = getGame(id)
 
         if (game.winner != ' ') {
@@ -50,19 +50,20 @@ class TicTacToeService {
             throw IllegalMoveException("Can not make move at $col, $row: already occupied")
         }
 
-        val winner: Char = checkWinCondition(game)
+        var winner: Char = checkWinCondition(game)
         if(winner != ' ') {
             game.winner = winner
             gameDTO.saveGame(game)
-            return
+            return game
         }
 
         game.board = computerPlayer.makeMove(game)
-        checkWinCondition(game)
+        winner = checkWinCondition(game)
         if(winner != ' ') {
             game.winner = winner
         }
         gameDTO.saveGame(game)
+        return game
     }
 
     private fun checkWinCondition(game: TicTacToeGame): Char {
