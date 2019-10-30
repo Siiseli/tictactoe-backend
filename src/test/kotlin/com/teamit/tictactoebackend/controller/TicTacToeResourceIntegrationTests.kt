@@ -38,6 +38,14 @@ class TicTacToeResourceIntegrationTests {
     }
 
     @Test
+    fun shouldNotStartGameWithInvalidCharacter() {
+        val startGameRequest = StartGameRequest("testName", 'y')
+        val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), Exception::class.java)
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
+    }
+
+    @Test
     fun shouldStartGameWithCaseInsensitivePlayerCharacter() {
         val startGameRequest = StartGameRequest("testName", 'X')
         val startGameResponse = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)

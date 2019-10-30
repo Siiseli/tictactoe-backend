@@ -2,6 +2,8 @@ package com.teamit.tictactoebackend.service
 
 import com.teamit.tictactoebackend.exception.GameNotFoundException
 import com.teamit.tictactoebackend.exception.IllegalMoveException
+import com.teamit.tictactoebackend.exception.InvalidCharacterException
+import com.teamit.tictactoebackend.model.game.TicTacToeCharacters
 import com.teamit.tictactoebackend.model.game.TicTacToeGame
 import com.teamit.tictactoebackend.model.game.TicTacToeGames
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +28,17 @@ class TicTacToeService {
     }
 
     fun startGame(name: String, playerCharacter: Char) : TicTacToeGame {
-        val game = TicTacToeGame(UUID.randomUUID().toString(), name, playerCharacter.toLowerCase(), if(playerCharacter.toLowerCase() == 'x') 'o' else 'x')
+        val playerCharacterNormalized = playerCharacter.toLowerCase()
+        if (!TicTacToeCharacters.VALID_CHARACTERS.contains(playerCharacterNormalized)) {
+            throw InvalidCharacterException("Invalid character, please select either ${TicTacToeCharacters.X} or ${TicTacToeCharacters.O}")
+        }
+
+        val game = TicTacToeGame(
+                UUID.randomUUID().toString(),
+                name,
+                playerCharacterNormalized,
+                if(playerCharacterNormalized == TicTacToeCharacters.X) TicTacToeCharacters.O else TicTacToeCharacters.X
+        )
 
         gameDTO.saveGame(game)
 
@@ -36,7 +48,7 @@ class TicTacToeService {
     fun makeMove(id: String, col: String, row: String) : TicTacToeGame {
         val game = getGame(id)
 
-        if (game.winner != ' ') {
+        if (game.winner != TicTacToeCharacters.Empty) {
             throw IllegalMoveException("Game has already ended, the winner is ${game.winner}")
         }
 
@@ -44,14 +56,14 @@ class TicTacToeService {
         val rowPos = mapPositionFromString(row)
 
         val character = game.board[rowPos][colPos]
-        if (character == ' ') {
+        if (character == TicTacToeCharacters.Empty) {
             game.board[rowPos][colPos] = game.playerCharacter
         } else {
             throw IllegalMoveException("Can not make move at $col, $row: already occupied")
         }
 
         var winner: Char = checkWinCondition(game)
-        if(winner != ' ') {
+        if(winner != TicTacToeCharacters.Empty) {
             game.winner = winner
             gameDTO.saveGame(game)
             return game
@@ -59,7 +71,7 @@ class TicTacToeService {
 
         game.board = computerPlayer.makeMove(game)
         winner = checkWinCondition(game)
-        if(winner != ' ') {
+        if(winner != TicTacToeCharacters.Empty) {
             game.winner = winner
         }
         gameDTO.saveGame(game)
@@ -75,7 +87,7 @@ class TicTacToeService {
                 score += getCharacterScore(character, game)
 
                 val winner: Char = getWinnerFromScore(score, game)
-                if(winner !== ' ') return winner
+                if(winner !== TicTacToeCharacters.Empty) return winner
             }
         }
 
@@ -87,7 +99,7 @@ class TicTacToeService {
                 score += getCharacterScore(character, game)
 
                 val winner: Char = getWinnerFromScore(score, game)
-                if(winner !== ' ') return winner
+                if(winner !== TicTacToeCharacters.Empty) return winner
             }
         }
 
@@ -98,7 +110,7 @@ class TicTacToeService {
             score += getCharacterScore(character, game)
         }
         var winner: Char = getWinnerFromScore(score, game)
-        if(winner !== ' ') return winner
+        if(winner !== TicTacToeCharacters.Empty) return winner
 
         score = 0
         for (i in 0 until game.board.size) {
@@ -124,7 +136,7 @@ class TicTacToeService {
         } else if(score >= game.board.size) {
             return game.playerCharacter
         }
-        return ' '
+        return TicTacToeCharacters.Empty
     }
 
     private fun mapPositionFromString(pos: String) : Int {

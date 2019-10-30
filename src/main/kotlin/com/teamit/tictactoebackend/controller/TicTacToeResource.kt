@@ -2,6 +2,7 @@ package com.teamit.tictactoebackend.controller
 
 import com.teamit.tictactoebackend.exception.GameNotFoundException
 import com.teamit.tictactoebackend.exception.IllegalMoveException
+import com.teamit.tictactoebackend.exception.InvalidCharacterException
 import com.teamit.tictactoebackend.model.game.*
 import com.teamit.tictactoebackend.service.TicTacToeService
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,6 +32,8 @@ class TicTacToeResource {
         return try {
             val game = ticTacToeService.startGame(startGameRequest.name, startGameRequest.character)
             Response.status(Response.Status.CREATED).entity(StartGameResponse(game.id)).build()
+        } catch(e: InvalidCharacterException) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build()
         } catch(e: Exception) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build()
         }
