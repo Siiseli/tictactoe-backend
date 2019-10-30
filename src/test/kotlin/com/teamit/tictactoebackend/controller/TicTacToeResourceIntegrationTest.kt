@@ -13,7 +13,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.junit4.SpringRunner
-import javax.ws.rs.core.Response
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,6 +36,23 @@ class TicTacToeResourceIntegrationTest {
 
         assertEquals(HttpStatus.CREATED, result.statusCode)
         assertTrue(result.body?.id?.isNotEmpty()!! && result.body?.id?.isNotBlank()!!)
+    }
+
+    @Test
+    fun shouldStartGameWithCaseInsensitivePlayerCharacter() {
+        val startGameRequest = StartGameRequest("testName", 'X')
+        val startGameResponse = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+
+        assertEquals(HttpStatus.CREATED, startGameResponse.statusCode)
+        assertTrue(startGameResponse.body?.id?.isNotEmpty()!! && startGameResponse.body?.id?.isNotBlank()!!)
+
+        val gameId = startGameResponse.body?.id
+        val result = testRestTemplate.getForEntity(
+                "/game/$gameId",
+                TicTacToeGame::class.java)
+
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertEquals('x', result.body?.playerCharacter)
     }
 
     @Test

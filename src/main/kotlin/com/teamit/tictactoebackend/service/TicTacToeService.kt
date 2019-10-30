@@ -26,7 +26,7 @@ class TicTacToeService {
     }
 
     fun startGame(name: String, playerCharacter: Char) : TicTacToeGame {
-        val game = TicTacToeGame(UUID.randomUUID().toString(), name, playerCharacter, if(playerCharacter == 'x') 'o' else 'x')
+        val game = TicTacToeGame(UUID.randomUUID().toString(), name, playerCharacter.toLowerCase(), if(playerCharacter.toLowerCase() == 'x') 'o' else 'x')
 
         gameDTO.saveGame(game)
 
