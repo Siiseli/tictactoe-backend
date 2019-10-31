@@ -2,6 +2,7 @@ package com.teamit.tictactoebackend.service
 
 import com.teamit.tictactoebackend.model.game.TicTacToeCharacters
 import com.teamit.tictactoebackend.model.game.TicTacToeGame
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +13,11 @@ class TicTacToeVisualizerServiceTests {
 
     @Autowired
     private lateinit var visualizer: TicTacToeVisualizerService
+
+    @Test
+    fun shouldInitialize() {
+        Assertions.assertNotNull(visualizer)
+    }
 
     @Test
     fun visualizesHeader() {

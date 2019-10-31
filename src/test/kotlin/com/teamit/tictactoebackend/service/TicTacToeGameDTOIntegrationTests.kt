@@ -15,6 +15,11 @@ class TicTacToeGameDTOIntegrationTests {
     private lateinit var gameDTO: TicTacToeGameDTO
 
     @Test
+    fun shouldInitialize() {
+        assertNotNull(gameDTO)
+    }
+
+    @Test
     fun shouldSaveGame() {
         val game = TicTacToeGame(UUID.randomUUID().toString(), "testName", TicTacToeCharacters.X, TicTacToeCharacters.O)
         gameDTO.saveGame(game)
