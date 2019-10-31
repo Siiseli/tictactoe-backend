@@ -48,13 +48,13 @@ class TicTacToeResource {
         return try {
             val game = ticTacToeService.getGame(id)
             if(accept.contains(MediaType.APPLICATION_JSON)) {
-                return Response.status(Response.Status.OK).entity(game).build()
+                return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON).entity(game).build()
             }
             return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
         } catch(e: GameNotFoundException) {
-            Response.status(Response.Status.NOT_FOUND).entity(e).build()
+            Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e).build()
         } catch(e: Exception) {
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build()
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(e).build()
         }
     }
 

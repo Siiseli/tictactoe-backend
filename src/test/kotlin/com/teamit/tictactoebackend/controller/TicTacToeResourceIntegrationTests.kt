@@ -85,7 +85,7 @@ class TicTacToeResourceIntegrationTests {
         val result = testRestTemplate.exchange(
                 "/game/$gameId",
                 HttpMethod.GET,
-                HttpEntity<Object>(httpHeaders),
+                HttpEntity<Any>(httpHeaders),
                 String::class.java)
 
         assertEquals(HttpStatus.OK, result.statusCode)
