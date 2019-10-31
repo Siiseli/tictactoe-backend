@@ -91,6 +91,7 @@ class TicTacToeResourceIntegrationTests {
 
         assertEquals(HttpStatus.OK, result.statusCode)
         assertTrue(result.body?.isNotEmpty()!!)
+        assertTrue(result.body?.contains("A B C")!!)
     }
 
     @Test
