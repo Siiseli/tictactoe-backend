@@ -122,6 +122,36 @@ class TicTacToeResourceIntegrationTests {
     }
 
     @Test
+    fun shouldBeAbleToMakeMoveAndGetAsciiInReturn() {
+        val startGameRequest = StartGameRequest("testName", 'x')
+        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+        val gameId = startGameResult.body?.id
+
+        val makeMoveRequest = MakeMoveRequest("a", "c")
+        val httpHeaders = HttpHeaders()
+        httpHeaders.accept = listOf(MediaType.TEXT_PLAIN)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest, httpHeaders), String::class.java)
+
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertTrue(result.body?.contains("A B C")!!)
+    }
+
+    @Test
+    fun shouldBeAbleToMakeMoveAndGetJsonInReturn() {
+        val startGameRequest = StartGameRequest("testName", 'x')
+        val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
+        val gameId = startGameResult.body?.id
+
+        val makeMoveRequest = MakeMoveRequest("a", "c")
+        val httpHeaders = HttpHeaders()
+        httpHeaders.accept = listOf(MediaType.APPLICATION_JSON)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest, httpHeaders), String::class.java)
+
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertTrue(result.body?.startsWith("{")!!)
+    }
+
+    @Test
     fun shouldNotBeAbleToMakeMoveToInvalidGame() {
         val makeMoveRequest = MakeMoveRequest("a", "c")
         val result = testRestTemplate.exchange("/game/-1/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)

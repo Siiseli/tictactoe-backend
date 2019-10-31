@@ -61,11 +61,13 @@ class TicTacToeResource {
     @POST
     @Path("{id}/move")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    fun makeMove(@PathParam("id") id: String, makeMoveRequest: MakeMoveRequest) : Response {
+    fun makeMove(@PathParam("id") id: String, @HeaderParam("accept") accept: String, makeMoveRequest: MakeMoveRequest) : Response {
         return try {
             val game = ticTacToeService.makeMove(id, makeMoveRequest.col, makeMoveRequest.row)
-            Response.status(Response.Status.OK).entity(game).build()
+            if(accept.contains(MediaType.APPLICATION_JSON)) {
+                return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON).entity(game).build()
+            }
+            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
         } catch(e: GameNotFoundException) {
             Response.status(Response.Status.NOT_FOUND).entity(e).build()
         }
