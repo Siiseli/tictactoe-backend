@@ -1,16 +1,20 @@
 package com.teamit.tictactoebackend.config
 
-import com.teamit.tictactoebackend.controller.TicTacToeResource
 import org.glassfish.jersey.server.ResourceConfig
-import org.springframework.stereotype.Component
+import org.springframework.context.annotation.Configuration
 
-@Component
+@Configuration
 class JerseyConfig : ResourceConfig() {
     init {
         registerEndpoints()
+        registerExceptionMappers()
     }
 
     private fun registerEndpoints() {
-        register(TicTacToeResource::class.java)
+        packages("com.teamit.tictactoebackend.controller")
+    }
+
+    private fun registerExceptionMappers() {
+        packages("com.teamit.tictactoebackend.exception.mapper")
     }
 }

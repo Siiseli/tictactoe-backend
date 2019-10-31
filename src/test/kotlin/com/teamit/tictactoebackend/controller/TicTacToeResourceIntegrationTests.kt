@@ -1,5 +1,6 @@
 package com.teamit.tictactoebackend.controller
 
+import com.teamit.tictactoebackend.model.error.ApiError
 import com.teamit.tictactoebackend.model.game.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -37,7 +38,7 @@ class TicTacToeResourceIntegrationTests {
     @Test
     fun shouldNotStartGameWithInvalidCharacter() {
         val startGameRequest = StartGameRequest("testName", 'y')
-        val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), Exception::class.java)
+        val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), ApiError::class.java)
 
         assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
     }
@@ -97,14 +98,14 @@ class TicTacToeResourceIntegrationTests {
     fun shouldGetNotFoundWhenFetchingGameWithInvalidId() {
         val result = testRestTemplate.getForEntity(
                 "/game/-1",
-                Exception::class.java)
+                ApiError::class.java)
 
         assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
     }
 
     @Test
     fun shouldNotStartGameWithEmptyPost() {
-        val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity.EMPTY, StartGameResponse::class.java)
+        val result = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity.EMPTY, ApiError::class.java)
 
         assertNotEquals(HttpStatus.OK, result.statusCode)
     }
@@ -154,7 +155,7 @@ class TicTacToeResourceIntegrationTests {
     @Test
     fun shouldNotBeAbleToMakeMoveToInvalidGame() {
         val makeMoveRequest = MakeMoveRequest("a", "c")
-        val result = testRestTemplate.exchange("/game/-1/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
+        val result = testRestTemplate.exchange("/game/-1/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ApiError::class.java)
 
         assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
     }
@@ -168,7 +169,7 @@ class TicTacToeResourceIntegrationTests {
         val makeMoveRequest = MakeMoveRequest("a", "c")
         testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), TicTacToeGame::class.java)
 
-        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ApiError::class.java)
         assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
     }
 
@@ -179,7 +180,7 @@ class TicTacToeResourceIntegrationTests {
         val gameId = startGameResult.body?.id
 
         val makeMoveRequest = MakeMoveRequest("a", "d")
-        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), Exception::class.java)
+        val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ApiError::class.java)
         assertEquals(HttpStatus.BAD_REQUEST, result.statusCode)
     }
 

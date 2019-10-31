@@ -1,9 +1,9 @@
 package com.teamit.tictactoebackend.controller
 
-import com.teamit.tictactoebackend.exception.GameNotFoundException
-import com.teamit.tictactoebackend.exception.IllegalMoveException
-import com.teamit.tictactoebackend.exception.InvalidCharacterException
-import com.teamit.tictactoebackend.model.game.*
+import com.teamit.tictactoebackend.model.game.MakeMoveRequest
+import com.teamit.tictactoebackend.model.game.StartGameRequest
+import com.teamit.tictactoebackend.model.game.StartGameResponse
+import com.teamit.tictactoebackend.model.game.TicTacToeGames
 import com.teamit.tictactoebackend.service.TicTacToeService
 import com.teamit.tictactoebackend.service.TicTacToeVisualizerService
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,50 +32,28 @@ class TicTacToeResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun startGame(startGameRequest: StartGameRequest) : Response {
-        return try {
-            val game = ticTacToeService.startGame(startGameRequest.name, startGameRequest.character)
-            Response.status(Response.Status.CREATED).entity(StartGameResponse(game.id)).build()
-        } catch(e: InvalidCharacterException) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e).build()
-        } catch(e: Exception) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build()
-        }
+        val game = ticTacToeService.startGame(startGameRequest.name, startGameRequest.character)
+        return Response.status(Response.Status.CREATED).entity(StartGameResponse(game.id)).build()
     }
 
     @GET
     @Path("{id}")
     fun getGame(@PathParam("id") id: String, @HeaderParam("accept") accept: String) : Response {
-        return try {
-            val game = ticTacToeService.getGame(id)
-            if(accept.contains(MediaType.APPLICATION_JSON)) {
-                return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON).entity(game).build()
-            }
-            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
-        } catch(e: GameNotFoundException) {
-            Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e).build()
-        } catch(e: Exception) {
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(e).build()
+        val game = ticTacToeService.getGame(id)
+        if(accept.contains(MediaType.APPLICATION_JSON)) {
+            return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON).entity(game).build()
         }
+        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
     }
 
     @POST
     @Path("{id}/move")
     @Consumes(MediaType.APPLICATION_JSON)
     fun makeMove(@PathParam("id") id: String, @HeaderParam("accept") accept: String, makeMoveRequest: MakeMoveRequest) : Response {
-        return try {
-            val game = ticTacToeService.makeMove(id, makeMoveRequest.col, makeMoveRequest.row)
-            if(accept.contains(MediaType.APPLICATION_JSON)) {
-                return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON).entity(game).build()
-            }
-            return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
-        } catch(e: GameNotFoundException) {
-            Response.status(Response.Status.NOT_FOUND).entity(e).build()
+        val game = ticTacToeService.makeMove(id, makeMoveRequest.col, makeMoveRequest.row)
+        if(accept.contains(MediaType.APPLICATION_JSON)) {
+            return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON).entity(game).build()
         }
-        catch(e: IllegalMoveException) {
-            Response.status(Response.Status.BAD_REQUEST).entity(e).build()
-        }
-        catch(e: Exception) {
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build()
-        }
+        return Response.status(Response.Status.OK).type(MediaType.TEXT_PLAIN).entity(ticTacToeVisualizer.visualize(game)).build()
     }
 }

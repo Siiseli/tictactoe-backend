@@ -1,3 +1,3 @@
 package com.teamit.tictactoebackend.exception
 
-class InvalidCharacterException(message: String): Exception(message)
+class InvalidCharacterException(message: String): RuntimeException(message)
