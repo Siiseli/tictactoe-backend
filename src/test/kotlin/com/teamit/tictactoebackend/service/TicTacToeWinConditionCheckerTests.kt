@@ -22,6 +22,16 @@ class TicTacToeWinConditionCheckerTests {
     }
 
     @Test
+    fun shouldFindNoWinnersForOccupiedBoardWithoutWinners() {
+        val game = TicTacToeGame("testId", "testName", TicTacToeCharacters.X, TicTacToeCharacters.O)
+        game.board[0][0] = game.playerCharacter
+        game.board[0][1] = game.computerCharacter
+        val winner = winConditionChecker.findWinner(game)
+
+        assertEquals(TicTacToeCharacters.EMPTY, winner)
+    }
+
+    @Test
     fun shouldFindWinnerForHorizontalWin() {
         val game = TicTacToeGame("testId", "testName", TicTacToeCharacters.X, TicTacToeCharacters.O)
         game.board[0][0] = game.playerCharacter
