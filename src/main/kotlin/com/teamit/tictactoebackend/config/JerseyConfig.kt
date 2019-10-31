@@ -1,5 +1,10 @@
 package com.teamit.tictactoebackend.config
 
+import com.teamit.tictactoebackend.controller.TicTacToeResource
+import com.teamit.tictactoebackend.exception.mapper.GameNotFoundExceptionMapper
+import com.teamit.tictactoebackend.exception.mapper.IllegalMoveExceptionMapper
+import com.teamit.tictactoebackend.exception.mapper.InvalidCharacterExceptionMapper
+import com.teamit.tictactoebackend.exception.mapper.UnhandledExceptionMapper
 import io.swagger.jaxrs.config.BeanConfig
 import io.swagger.jaxrs.listing.ApiListingResource
 import io.swagger.jaxrs.listing.SwaggerSerializers
@@ -15,11 +20,14 @@ class JerseyConfig : ResourceConfig() {
     }
 
     private fun registerEndpoints() {
-        packages("com.teamit.tictactoebackend.controller")
+        register(TicTacToeResource::class.java)
     }
 
     private fun registerExceptionMappers() {
-        packages("com.teamit.tictactoebackend.exception.mapper")
+        register(GameNotFoundExceptionMapper::class.java)
+        register(IllegalMoveExceptionMapper::class.java)
+        register(InvalidCharacterExceptionMapper::class.java)
+        register(UnhandledExceptionMapper::class.java)
     }
 
     private fun configureSwagger() {
