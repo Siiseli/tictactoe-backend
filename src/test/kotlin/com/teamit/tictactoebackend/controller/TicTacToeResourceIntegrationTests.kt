@@ -1,10 +1,9 @@
 package com.teamit.tictactoebackend.controller
 
 import com.teamit.tictactoebackend.model.game.*
-import junit.framework.TestCase.*
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
-import org.junit.Assert.assertNotEquals
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate

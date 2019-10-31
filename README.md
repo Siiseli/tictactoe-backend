@@ -35,7 +35,7 @@ If you just want to build the container for later use:
 
 #### Building
 - Run ```./mvnw install```
-    
+
 #### Running
 - Run ```java -jar target/tictactoe-backend-0.0.1-SNAPSHOT.jar```
 
