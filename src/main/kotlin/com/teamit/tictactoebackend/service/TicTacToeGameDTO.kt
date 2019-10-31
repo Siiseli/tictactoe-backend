@@ -9,6 +9,9 @@ import java.io.File
 @Service
 class TicTacToeGameDTO {
 
+
+    private val dataPath = "data/games"
+
     fun saveGame(game: TicTacToeGame) {
         val objectMapper = jacksonObjectMapper()
         val gameFile = getGameFile(game.id)
@@ -27,8 +30,10 @@ class TicTacToeGameDTO {
 
     fun getGames(): TicTacToeGames {
         val games: ArrayList<TicTacToeGame> = ArrayList()
-        File("data/games/").walkBottomUp().map {
-            games.add(loadGameFile(it))
+        File("$dataPath").walkBottomUp().forEach {
+            if(it.isFile) {
+                games.add(loadGameFile(it))
+            }
         }
         return TicTacToeGames(games)
     }
@@ -39,7 +44,7 @@ class TicTacToeGameDTO {
     }
 
     private fun getGameFile(id: String) : File {
-        return File("data/games/$id.json")
+        return File("$dataPath/$id.json")
     }
 
 }
