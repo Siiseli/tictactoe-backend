@@ -38,6 +38,14 @@ class TicTacToeGameDTO {
         return TicTacToeGames(games)
     }
 
+    fun deleteGames(ids: ArrayList<String>) {
+        File("$dataPath").walkBottomUp().forEach {
+            if(it.isFile && ids.contains(it.nameWithoutExtension)) {
+                it.delete()
+            }
+        }
+    }
+
     private fun loadGameFile(path: File): TicTacToeGame {
         val objectMapper = jacksonObjectMapper()
         return objectMapper.readValue(path, TicTacToeGame::class.java)

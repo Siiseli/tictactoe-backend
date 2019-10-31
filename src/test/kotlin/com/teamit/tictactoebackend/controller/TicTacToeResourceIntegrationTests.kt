@@ -2,21 +2,31 @@ package com.teamit.tictactoebackend.controller
 
 import com.teamit.tictactoebackend.model.error.ApiError
 import com.teamit.tictactoebackend.model.game.*
+import com.teamit.tictactoebackend.service.TicTacToeGameDTO
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.*
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TicTacToeResourceIntegrationTests {
 
     @Autowired
     lateinit var testRestTemplate: TestRestTemplate
+
+    // Used for cleaning up created games after tests are done
+    @Autowired
+    lateinit var gameDTO: TicTacToeGameDTO
+
+    private val createdGames: ArrayList<String> = ArrayList()
 
     @Test
     fun shouldGetAllGames() {
@@ -33,6 +43,8 @@ class TicTacToeResourceIntegrationTests {
 
         assertEquals(HttpStatus.CREATED, result.statusCode)
         assertTrue(result.body?.id?.isNotEmpty()!! && result.body?.id?.isNotBlank()!!)
+
+        createdGames.add(result.body?.id!!)
     }
 
     @Test
@@ -58,6 +70,8 @@ class TicTacToeResourceIntegrationTests {
 
         assertEquals(HttpStatus.OK, result.statusCode)
         assertEquals('x', result.body?.playerCharacter)
+
+        createdGames.add(result.body?.id!!)
     }
 
     @Test
@@ -67,6 +81,10 @@ class TicTacToeResourceIntegrationTests {
         httpHeaders.accept = listOf(MediaType.APPLICATION_JSON)
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest, httpHeaders), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
+
         val result = testRestTemplate.getForEntity(
                 "/game/$gameId",
                 TicTacToeGame::class.java)
@@ -80,6 +98,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         val httpHeaders = HttpHeaders()
         httpHeaders.accept = listOf(MediaType.TEXT_PLAIN)
@@ -115,6 +136,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
         val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), TicTacToeGame::class.java)
@@ -127,6 +151,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
         val httpHeaders = HttpHeaders()
@@ -142,6 +169,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
         val httpHeaders = HttpHeaders()
@@ -165,6 +195,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         val makeMoveRequest = MakeMoveRequest("a", "c")
         testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), TicTacToeGame::class.java)
@@ -178,6 +211,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         val makeMoveRequest = MakeMoveRequest("a", "d")
         val result = testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(makeMoveRequest), ApiError::class.java)
@@ -189,6 +225,9 @@ class TicTacToeResourceIntegrationTests {
         val startGameRequest = StartGameRequest("testName", 'x')
         val startGameResult = testRestTemplate.exchange("/game/", HttpMethod.POST, HttpEntity(startGameRequest), StartGameResponse::class.java)
         val gameId = startGameResult.body?.id
+        if (gameId != null) {
+            createdGames.add(gameId)
+        }
 
         // We can win like this every time, because the AI is not the sharpest knife in the kitchen.
         testRestTemplate.exchange("/game/$gameId/move", HttpMethod.POST, HttpEntity(MakeMoveRequest("A", "C")), TicTacToeGame::class.java)
@@ -202,5 +241,10 @@ class TicTacToeResourceIntegrationTests {
         assertEquals(HttpStatus.OK, result.statusCode)
         assertEquals(gameId, result.body?.id)
         assertEquals('x', result.body?.winner)
+    }
+
+    @AfterAll
+    fun cleanup() {
+        gameDTO.deleteGames(createdGames)
     }
 }
