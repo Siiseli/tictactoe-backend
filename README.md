@@ -19,13 +19,13 @@ This is a tic tac toe REST service written in Kotlin, using Spring Boot and Jers
 #### Running
 
 - After building the jar, docker container can be started with
-    - ```docker-compose build server```
-    - ```docker-compose up server```
+    - ```docker-compose build tictactoe```
+    - ```docker-compose up tictactoe```
 - Server is now available at http://localhost:8080
 
 If you just want to build the container for later use: 
 
-- ```docker-compose build server```
+- ```docker-compose build tictactoe```
 
 ### Without Docker
 
