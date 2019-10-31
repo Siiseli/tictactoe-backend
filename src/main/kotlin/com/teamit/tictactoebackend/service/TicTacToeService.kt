@@ -33,9 +33,7 @@ class TicTacToeService {
 
     fun startGame(name: String, playerCharacter: Char) : TicTacToeGame {
         val playerCharacterNormalized = playerCharacter.toLowerCase()
-        if (!TicTacToeCharacters.VALID_CHARACTERS.contains(playerCharacterNormalized)) {
-            throw InvalidCharacterException("Invalid character, please select either ${TicTacToeCharacters.X} or ${TicTacToeCharacters.O}")
-        }
+        validateCharacter(playerCharacterNormalized)
 
         val game = TicTacToeGame(
                 UUID.randomUUID().toString(),
@@ -51,18 +49,12 @@ class TicTacToeService {
 
     fun makeMove(id: String, col: String, row: String) : TicTacToeGame {
         val game = getGame(id)
-
-        if (game.winner != TicTacToeCharacters.EMPTY) {
-            if(game.winner == TicTacToeCharacters.DRAW) {
-                throw IllegalMoveException("Game has already ended, it was a draw")
-            }
-
-            throw IllegalMoveException("Game has already ended, the winner is ${game.winner}")
-        }
+        validateGame(game)
 
         val colPos = StringPositionMapper.mapPositionFromString(col)
         val rowPos = StringPositionMapper.mapPositionFromString(row)
 
+        // Try to make move
         val character = game.board[rowPos][colPos]
         if (character == TicTacToeCharacters.EMPTY) {
             game.board[rowPos][colPos] = game.playerCharacter
@@ -70,6 +62,7 @@ class TicTacToeService {
             throw IllegalMoveException("Can not make move at $col, $row: already occupied")
         }
 
+        // Check if we won
         var winner: Char = winConditionChecker.findWinner(game)
         if(winner != TicTacToeCharacters.EMPTY) {
             game.winner = winner
@@ -77,12 +70,30 @@ class TicTacToeService {
             return game
         }
 
+        // Computer's turn
         game.board = computerPlayer.makeMove(game)
         winner = winConditionChecker.findWinner(game)
         if(winner != TicTacToeCharacters.EMPTY) {
             game.winner = winner
         }
+
         gameDTO.saveGame(game)
         return game
+    }
+
+    private fun validateCharacter(playerCharacterNormalized: Char) {
+        if (!TicTacToeCharacters.VALID_CHARACTERS.contains(playerCharacterNormalized)) {
+            throw InvalidCharacterException("Invalid character, please select either ${TicTacToeCharacters.X} or ${TicTacToeCharacters.O}")
+        }
+    }
+
+    private fun validateGame(game: TicTacToeGame) {
+        if (game.winner != TicTacToeCharacters.EMPTY) {
+            if (game.winner == TicTacToeCharacters.DRAW) {
+                throw IllegalMoveException("Game has already ended, it was a draw")
+            }
+
+            throw IllegalMoveException("Game has already ended, the winner is ${game.winner}")
+        }
     }
 }
