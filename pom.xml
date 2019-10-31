@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.teamit</groupId>
     <artifactId>tictactoe-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>tictactoe-backend</name>
     <description>Tic tac toe backend</description>
 

@@ -37,7 +37,7 @@ If you just want to build the container for later use:
 - Run ```./mvnw install```
 
 #### Running
-- Run ```java -jar target/tictactoe-backend-0.0.1-SNAPSHOT.jar```
+- Run ```java -jar target/tictactoe-backend-1.0.0.jar```
 
 #### Running without building jar (Useful for development)
 - Run ```mvn spring-boot:run```
@@ -76,7 +76,7 @@ If you just want to build the container for later use:
 
 - To view the state of any running game, make a GET request to http://localhost:8080/game/{id}
 - For example ```http://localhost:8080/game/fd280f19-7fd4-4760-b6ec-91d4eca2d7be```
-    - You can get the game state in ASCII representation by specifying "accept" http header as type "text/plain"
+    - You can get the game state in ASCII representation by specifying "accept" http header as type "text/plain" or not specifying it at all
     - You can get the game state in JSON by specifying "accept" http header as type "application/json"
 
 ### Make move
@@ -95,5 +95,5 @@ request body as JSON containing
 }
 ```
 - The server will return the updated game state for convenience after computer has made its move
-    - You can get the game state in ASCII representation by specifying "accept" http header as type "text/plain"
+    - You can get the game state in ASCII representation by specifying "accept" http header as type "text/plain" or not specifying it at all
     - You can get the game state in JSON by specifying "accept" http header as type "application/json"
