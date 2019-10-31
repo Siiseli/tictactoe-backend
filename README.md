@@ -1,6 +1,6 @@
 # Tic tac toe backend
 
-This is a tic tac toe REST service written in Kotlin, using Spring Boot and Jersey.
+This is a tic tac toe REST service written in Kotlin, using Spring Boot, Jersey and Swagger.
 
 ## Starting up
 
@@ -22,6 +22,7 @@ This is a tic tac toe REST service written in Kotlin, using Spring Boot and Jers
     - ```docker-compose build tictactoe```
     - ```docker-compose up tictactoe```
 - Server is now available at http://localhost:8080
+- API documentation with Swagger is available at http://localhost:8080/swagger/index.html
 
 If you just want to build the container for later use: 
 
@@ -46,9 +47,12 @@ If you just want to build the container for later use:
 
 ## Usage
 
+API documentation generated with Swagger can also be found at http://localhost:8080/swagger/index.html. 
+You can also try out interacting with the server there, instead of firing off HTTP requests by hand.
+
 ### Start game
 
-- To start a new game, make a POST request to http://localhost:8080/game with request body as JSON containing
+- To start a new game, make a POST request to http://localhost:8080/api/game with request body as JSON containing
     - player name as "name"
     - selected character as "character"
         - Valid characters are "x" or "o"
@@ -69,18 +73,18 @@ If you just want to build the container for later use:
 
 ### View all games
 
-- To view all games, make a GET request http://localhost:8080/game
+- To view all games, make a GET request http://localhost:8080/api/game
 - The server will return all games in JSON
 
 ### View game state
 
-- To view the state of any running game, make a GET request to http://localhost:8080/game/{id}
-- For example ```http://localhost:8080/game/fd280f19-7fd4-4760-b6ec-91d4eca2d7be```
+- To view the state of any running game, make a GET request to http://localhost:8080/api/game/{id}
+- For example ```http://localhost:8080/api/game/fd280f19-7fd4-4760-b6ec-91d4eca2d7be```
     - You can get the game state in ASCII representation by specifying "accept" http header as type "text/plain" or not specifying it at all
     - You can get the game state in JSON by specifying "accept" http header as type "application/json"
 
 ### Make move
-- To make a move to any running game, make a POST request to http://localhost:8080/game/{id}/move with 
+- To make a move to any running game, make a POST request to http://localhost:8080/api/game/{id}/move with 
 request body as JSON containing 
     - Row as "row"
     - Column as "col"
