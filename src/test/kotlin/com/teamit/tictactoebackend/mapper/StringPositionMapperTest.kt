@@ -16,6 +16,12 @@ class StringPositionMapperTest {
     }
 
     @Test
+    fun shouldMapValidStringToPositionCaseInsensitive() {
+        val pos = StringPositionMapper.mapPositionFromString("a")
+        assertEquals(0, pos)
+    }
+
+    @Test
     fun shouldThrowIllegalMoveExceptionForInvalidStringPosition() {
         assertThrows(IllegalMoveException::class.java) {
             StringPositionMapper.mapPositionFromString("D")
